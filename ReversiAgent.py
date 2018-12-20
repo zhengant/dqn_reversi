@@ -40,7 +40,7 @@ class ReversiAgent:
 
 
     def save(self, filename):
-        self._Q.save_model(filename)
+        tf.keras.models.save_model(self._Q, filename)
 
 
     def __processtate__(self, state):
