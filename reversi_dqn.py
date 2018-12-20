@@ -10,7 +10,7 @@ def compute_epsilon(episodes):
     return 0.5 - min(1e-3 * episodes, 0.5 - 0.001)
 
 
-def dqn_reversi(num_episodes=100000, memory_capacity=10000, model_memory_capacity=10, batch_size=32, C=5):
+def dqn_reversi(num_episodes=1000000, memory_capacity=10000, model_memory_capacity=10, batch_size=32, C1=2, C2=10, save_freq=1000):
     agent = ReversiAgent()
     experience_buffer = ReplayBuffer(memory_capacity)
     model_buffer = ReplayBuffer(model_memory_capacity)
@@ -33,9 +33,14 @@ def dqn_reversi(num_episodes=100000, memory_capacity=10000, model_memory_capacit
             if len(experience_buffer) > batch_size:
                 agent.update_Q(experience_buffer.get_memory_batch(batch_size))
 
-            if episode % C == 0:
-                model_buffer.add_memory(agent.clone())
+            if episode % C1 == 0:
                 agent.update_targetQ()
+
+            if episode % C2 == 0:
+                model_buffer.add_memory(agent.clone())
+
+            if episode % save_freq == 0:
+                agent.save('reversi_agent.h5')
 
             state = new_state
 
